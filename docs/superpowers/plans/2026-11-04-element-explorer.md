@@ -53,6 +53,6 @@
 
 - [x] Test built assets at desktop and mobile widths, API-unavailable operation, filters, details, comparison, keyboard navigation, console health, and axe accessibility.
 - [x] Review the whole branch, fix significant findings, and rerun validation.
-- [ ] Open the first PR; preserve reviewability and do not merge automatically.
+- [x] Open the first PR; preserve reviewability and do not merge automatically.
 - [x] Inspect existing Worker, DNS, and Access state; back up the exact prior Worker. Prepare bounded release configuration and rollback instructions.
-- [ ] Use a preview before activating the approved Matter Atlas production/domain changes; verify public app and preserved APIs and private protections.
+- [x] Use a preview before activating the approved Matter Atlas production/domain changes; verify public app and preserved APIs and private protections.

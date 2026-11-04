@@ -1,5 +1,7 @@
 # Gold Shore Matter Atlas
 
+[Live explorer](https://matter.goldshore.ai) · [First implementation PR](https://github.com/marzton/goldshore-matter-atlas/pull/1)
+
 A public, read-only explorer for all 118 elements. React and TypeScript power a searchable periodic table, family/state filters, source-linked details, and a comparison workspace. Essential records are bundled locally; browsing makes no provider or GS-API requests.
 
 ```sh

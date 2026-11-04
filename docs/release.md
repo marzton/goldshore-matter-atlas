@@ -4,6 +4,19 @@
 
 The November 4 continuation authorizes the first PR. A subsequent explicit user approval includes Matter Atlas production, DNS, and Access work. GS-API remains excluded. Release only to the existing `goldshore-matter-atlas` Worker in Gold Shore Labs and the designated `matter.goldshore.ai` hostname. CI has no deployment or infrastructure permissions.
 
+## Verified release — November 4, 2026
+
+- Canonical HTTPS app: https://matter.goldshore.ai (200, correct title, public without credentials).
+- PR: https://github.com/marzton/goldshore-matter-atlas/pull/1, open and unmerged.
+- Runtime source commit: `cc6a54323df4086acb384bb411c2898e2d67a7ff`.
+- Active version: `56b3cdc0-06e0-46e3-819c-b4aedc502196`, 100% on the existing Worker; deployment `b224380d-a6c9-4c63-8ca6-dcf76ee9ef2b`.
+- Validated version preview: https://56b3cdc0-goldshore-matter-atlas.goldshore.workers.dev.
+- Custom Domain: `24ec56cf1a20bcd26a14144df47c7c670b32598f`; managed DNS record `6345cac3f0a798539305ff674d4cc581`. Public A/AAAA resolution and HTTPS checked.
+- Validation: lint, type-check, build, 13 Node contract tests, 29 Vitest tests, and 8 desktop/mobile Chromium browser tests. Browser checks passed in preview and on the canonical hostname, with the two documented inherited GTM CSP blocks classified separately from unexpected application errors. Axe found no violations in the tested views.
+- The 118-record API response matches the saved pre-release body exactly. Invalid atomic number returns 404; POST remains 405; HTML CSP nonces differ per response.
+- All 27 Access applications and policies match the canonicalized pre-release snapshot (68,575 bytes; diagnostic checksum `c3202d26`). No Access mutation or GS-API change was needed.
+- Existing Google Tag Gateway configuration is unchanged. The only zone configuration addition is the exact-host Zaraz exclusion described below.
+
 ## Recorded initial state
 
 - Worker: `goldshore-matter-atlas`, existing isolated MVP; compatibility date `2026-11-04`, no bindings or compatibility flags.
@@ -37,3 +50,11 @@ Use the connected Cloudflare API for account operations. The available local CLI
 No live GS-API integration, physical-property dataset, or scientific model is included. No production cost promise is made; monitor actual Worker requests and asset traffic. Server-side static asset routing adds Worker invocations to apply consistent security headers. Chromium desktop/mobile emulation is covered; Safari/Firefox and a manual screen-reader audit remain future checks.
 
 Minor follow-up from independent review: the condition editor marks both inputs invalid when their shared validation fails. Separate field-level validation hints can improve this feedback without changing conversion or rejection behavior.
+
+## Inherited Google Tag Gateway limitation
+
+Live-domain validation found a separate zone-wide Google Tag Gateway injecting two inline GTM snippets before the application. [Cloudflare documents that this feature cannot be excluded by hostname or Configuration Rules](https://developers.cloudflare.com/google-tag-gateway/#zone-level-configuration). The host-scoped Zaraz exclusion does not control this separate product.
+
+The explorer keeps its strict CSP and blocks both GTM snippets. They produce two expected browser console policy messages. No application script is blocked; all interactive checks pass. The browser suite records only these exact known script hashes as expected blocked injections on `matter.goldshore.ai`, while any other console error remains a failure. Workers.dev previews have no such messages. Zone-wide tag configuration is preserved because changing it would affect other Gold Shore hosts, including the excluded GS-API scope.
+
+Ruling: accept and disclose these two blocked external-injection messages while keeping the application and domain operational. Cost: browser developer tools retain this known noise until the zone owner changes the broader gateway setup. Do not weaken the application's CSP or broaden this task to zone-wide tracking changes to hide it.

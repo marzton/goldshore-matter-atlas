@@ -19,9 +19,25 @@ test("bundled explorer works without APIs, supports keyboard, filters, and detai
   page,
 }) => {
   const errors: string[] = [];
+  const blockedGatewayScripts: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {
-    if (message.type() === "error") errors.push(message.text());
+    if (message.type() !== "error") return;
+    const text = message.text();
+    // The existing zone-wide Google Tag Gateway injects these two snippets.
+    // Cloudflare cannot exclude a hostname; retain the application's CSP blocks.
+    // Match exact known script hashes only. Every other console error still fails.
+    const knownGatewayBlock =
+      new URL(page.url()).hostname === "matter.goldshore.ai" &&
+      text.startsWith(
+        "Executing inline script violates the following Content Security Policy directive",
+      ) &&
+      [
+        "sha256-d9pJ8Gct7UHXekX6s5gMhUA9tSkd/vEyPfrwaRoCjzc=",
+        "sha256-bGSVHoMEJKsgXk/66rgtBJc6YaOnmGNN54yqJW2tBjA=",
+      ].some((hash) => text.includes(hash));
+    if (knownGatewayBlock) blockedGatewayScripts.push(text);
+    else errors.push(text);
   });
   await page.route("**/api/**", (route) => route.abort());
   await page.goto("/");
@@ -44,7 +60,10 @@ test("bundled explorer works without APIs, supports keyboard, filters, and detai
   await expect(
     page.getByLabel("Element details").getByRole("heading", { level: 2 }),
   ).toHaveText(/Alumin/);
-  const filterToggle = page.getByRole("button", { name: "Filters", exact: true });
+  const filterToggle = page.getByRole("button", {
+    name: "Filters",
+    exact: true,
+  });
   if (await filterToggle.isVisible()) await filterToggle.click();
   await page
     .getByRole("combobox", { name: "Family", exact: true })
@@ -75,6 +94,11 @@ test("bundled explorer works without APIs, supports keyboard, filters, and detai
     ),
   ).toBe(true);
   expect(errors).toEqual([]);
+  if (blockedGatewayScripts.length)
+    test.info().annotations.push({
+      type: "Known zone CSP blocks",
+      description: `${blockedGatewayScripts.length} Google Tag Gateway inline snippets blocked; see docs/release.md. No unexpected console errors.`,
+    });
 });
 
 test("comparison updates selections and validates condition inputs without inventing data", async ({
