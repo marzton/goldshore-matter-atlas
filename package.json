@@ -1,0 +1,9 @@
+{
+  "name": "goldshore-matter-atlas",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "description": "Gold Shore Matter Atlas — publicly accessible scientific exploration",
+  "scripts": {"test": "node --test tests.mjs"},
+  "engines": {"node": ">=20"}
+}
