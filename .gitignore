@@ -6,3 +6,6 @@ node_modules/
 .cf/
 dist/
 .DS_Store
+test-results/
+playwright-report/
+.superpowers/
