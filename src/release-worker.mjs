@@ -19,12 +19,17 @@ export default {
         "permissions-policy",
         "camera=(), microphone=(), geolocation=()",
       );
+      // Cloudflare's JavaScript Detections copies a CSP response-header nonce
+      // onto its injected challenge scripts. Keep bot protection enabled.
+      const isDocument = path === "/" || path === "/index.html";
+      const nonce = isDocument
+        ? ` 'nonce-${crypto.randomUUID().replaceAll("-", "")}'`
+        : "";
       response.headers.set(
         "content-security-policy",
-        "default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
+        `default-src 'none'; script-src 'self'${nonce}; style-src 'self'; style-src-attr 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; frame-ancestors 'none'; form-action 'none'`,
       );
-      if (path === "/" || path === "/index.html")
-        response.headers.set("cache-control", "no-cache");
+      if (isDocument) response.headers.set("cache-control", "no-cache");
       return response;
     }
     return legacy.fetch(request);

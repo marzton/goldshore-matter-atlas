@@ -56,4 +56,3 @@
 - [ ] Open the first PR; preserve reviewability and do not merge automatically.
 - [x] Inspect existing Worker, DNS, and Access state; back up the exact prior Worker. Prepare bounded release configuration and rollback instructions.
 - [ ] Use a preview before activating the approved Matter Atlas production/domain changes; verify public app and preserved APIs and private protections.
-

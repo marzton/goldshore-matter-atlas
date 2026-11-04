@@ -28,6 +28,7 @@ Use the connected Cloudflare API for account operations. The available local CLI
 
 - Redeploy original version `a04d5e4e-94d5-4079-a741-904bb6fdb27a` at 100% using the Worker Deployments API. Its original embedded MVP UI and API return together; no database rollback is involved.
 - If reverting the hostname connection, detach only the newly added exact `matter.goldshore.ai` Custom Domain. Verify its managed DNS record is removed. Initial state had no record to restore.
+- Remove only the Matter Atlas Zaraz exclusion rule `60b66d4e5c304e8da5247223cda84c3f` from the `http_config_settings` ruleset `6c437486c174472e8106c86b00c32530` if reverting the hostname. No entrypoint existed before this release; remove that ruleset only if it still contains exclusively this owned rule. Preserve any later concurrent additions.
 - Restore this Worker's preview setting to disabled if the release is abandoned. Do not change other Workers or Access applications.
 - Validate `/health`, `/api/v1/elements` (118 records), and `/api/v1/elements/119` (404) after rollback.
 
