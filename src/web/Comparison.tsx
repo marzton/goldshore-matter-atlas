@@ -42,6 +42,7 @@ export function Comparison({
         <label>
           Material A
           <select
+            id="compare-material-a"
             value={first}
             onChange={(e) => onFirstChange(Number(e.target.value))}
           >

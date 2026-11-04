@@ -1,6 +1,20 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+test("a filtered result is visible beside the search controls before clicking", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("searchbox").fill("Og");
+  const result = page.getByRole("button", { name: /^118 / });
+  await expect(result).toHaveCount(1);
+  await expect(result).toBeInViewport();
+  await result.click();
+  await expect(
+    page.getByRole("heading", { name: "Oganesson", exact: true }),
+  ).toBeVisible();
+});
+
 test("bundled explorer works without APIs, supports keyboard, filters, and details", async ({
   page,
 }) => {
@@ -21,11 +35,17 @@ test("bundled explorer works without APIs, supports keyboard, filters, and detai
   await expect(
     page.getByRole("heading", { name: "Lithium", exact: true }),
   ).toBeVisible();
+  await page.keyboard.press("Tab");
+  await expect(
+    page.getByRole("button", { name: "Compare Li as material A" }),
+  ).toBeFocused();
   await page.getByRole("searchbox").fill("  aluminum  ");
   await page.getByRole("button", { name: /^13 / }).click();
   await expect(
     page.getByLabel("Element details").getByRole("heading", { level: 2 }),
   ).toHaveText(/Alumin/);
+  const filterToggle = page.getByRole("button", { name: "Filters", exact: true });
+  if (await filterToggle.isVisible()) await filterToggle.click();
   await page
     .getByRole("combobox", { name: "Family", exact: true })
     .selectOption("Noble gas");

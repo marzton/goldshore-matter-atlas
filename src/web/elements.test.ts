@@ -70,6 +70,14 @@ describe("bundled scientific baseline", () => {
 });
 
 describe("search and combined filters", () => {
+  it("prioritizes every exact full name over partial-name collisions", () => {
+    for (const record of elements) {
+      expect(
+        filterElements(elements, record.name, "", "").map((e) => e.number),
+        record.name,
+      ).toEqual([record.number]);
+    }
+  });
   it.each([
     [" hE ", 2],
     ["helium", 2],

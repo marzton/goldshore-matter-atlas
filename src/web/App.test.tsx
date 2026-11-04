@@ -41,17 +41,39 @@ describe("element explorer", () => {
       ),
     ).toBeVisible();
   });
-  it("moves focus and selection between element buttons with arrow keys", () => {
+  it("moves focus and selection between element buttons with arrow keys", async () => {
+    const user = userEvent.setup();
     render(<App />);
     const he = screen.getByRole("button", { name: /^2 / });
     he.focus();
     fireEvent.keyDown(he, { key: "ArrowRight" });
     expect(screen.getByRole("button", { name: /^3 / })).toHaveFocus();
     expect(screen.getByRole("heading", { name: "Lithium" })).toBeVisible();
+    await user.tab();
+    expect(
+      screen.getByRole("button", { name: "Compare Li as material A" }),
+    ).toHaveFocus();
+  });
+  it("restores search focus when the empty-state reset control disappears", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.type(screen.getByRole("searchbox"), "no-such-element");
+    await user.click(screen.getByRole("button", { name: "Show all elements" }));
+    expect(screen.getByRole("searchbox")).toHaveFocus();
   });
 });
 
 describe("comparison", () => {
+  it("transfers keyboard focus to comparison and lets Tab reach material B", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(
+      screen.getByRole("button", { name: "Compare He as material A" }),
+    );
+    expect(screen.getByLabelText("Material A")).toHaveFocus();
+    await user.tab();
+    expect(screen.getByLabelText("Material B")).toHaveFocus();
+  });
   it("supports two independent choices and shows condition-specific properties as not loaded", async () => {
     const user = userEvent.setup();
     render(<App />);

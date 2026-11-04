@@ -100,7 +100,9 @@ export function filterElements(
       number
     >
   )[term];
-  const exactSymbol = records.find((e) => e.symbol.toLowerCase() === term);
+  const exactMatch = records.find(
+    (e) => e.symbol.toLowerCase() === term || e.name.toLowerCase() === term,
+  );
   return records.filter(
     (e) =>
       (!family || e.family === family) &&
@@ -108,8 +110,8 @@ export function filterElements(
       (!term ||
         (alias
           ? e.number === alias
-          : exactSymbol
-            ? e.number === exactSymbol.number
+          : exactMatch
+            ? e.number === exactMatch.number
             : /^\d+$/.test(term)
               ? e.number === Number(term)
               : e.name.toLowerCase().includes(term))),

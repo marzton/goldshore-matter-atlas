@@ -13,4 +13,6 @@ The original API expresses detached chart rows as periods 8/9. Its compatibility
 
 React state owns search, selection, independent comparison choices, and conditions. Filtering derives from state in render. Native buttons, inputs, selects, details, focus outlines, a skip link, and keyboard-scrollable regions provide baseline accessibility. Arrow keys follow atomic-number order through visible results; Home/End jump to the first/last visible record.
 
+Exact full names and symbols take priority over partial name matching. Active filters show compact cards; the unfiltered view keeps the standard periodic arrangement. On phones, secondary filters expand from the Filters button. The tiles have one tab stop, arrow keys move selection, and comparison activation transfers focus to Material A. Reset restores search focus.
+
 The only new runtime binding is the local static asset collection. No GS-API, databases, storage buckets, credentials, authentication, AI inference, or external scientific services are needed.

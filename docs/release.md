@@ -34,3 +34,5 @@ Use the connected Cloudflare API for account operations. The available local CLI
 ## Limits
 
 No live GS-API integration, physical-property dataset, or scientific model is included. No production cost promise is made; monitor actual Worker requests and asset traffic. Server-side static asset routing adds Worker invocations to apply consistent security headers. Chromium desktop/mobile emulation is covered; Safari/Firefox and a manual screen-reader audit remain future checks.
+
+Minor follow-up from independent review: the condition editor marks both inputs invalid when their shared validation fails. Separate field-level validation hints can improve this feedback without changing conversion or rejection behavior.

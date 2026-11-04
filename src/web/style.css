@@ -919,6 +919,50 @@ footer {
     font-size: 24px;
   }
 }
+.periodic-table.compact {
+  min-width: 0;
+  grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
+  grid-template-rows: none;
+  gap: 8px;
+  padding: 4px;
+}
+.filter-options {
+  display: contents;
+}
+.filter-toggle {
+  display: none;
+}
+@media (max-width: 500px) {
+  .filters .search-label {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .filters .filter-toggle {
+    display: block;
+    flex: 0 0 78px;
+    width: auto;
+    align-self: end;
+  }
+  .filter-options {
+    display: none;
+  }
+  .filter-options.expanded {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    flex-basis: 100%;
+  }
+}
+.compact .element {
+  height: 92px;
+  padding: 9px;
+}
+.compact .element strong {
+  font-size: 28px;
+}
+.compact .element-name {
+  font-size: 10px;
+}
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

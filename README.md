@@ -7,7 +7,7 @@ npm ci
 npm run dev
 ```
 
-Requires Node.js 22.12+ (CI uses Node 24). `npm run build` produces `dist/`; `npm run preview` serves that build locally.
+Requires Node.js 22.22.2 or later 22.x, Node 24.15+ (CI uses Node 24), or Node 26+. `npm run build` produces `dist/`; `npm run preview` serves that build locally.
 
 ```sh
 npm run check

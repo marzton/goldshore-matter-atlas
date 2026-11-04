@@ -16,17 +16,18 @@ export default function App() {
   const [state, setState] = useState("");
   const [selected, setSelected] = useState(2);
   const [first, setFirst] = useState(2);
+  const [showFilters, setShowFilters] = useState(false);
   const visible = filterElements(elements, query, family, state);
+  const filtered = Boolean(query.trim() || family || state);
   function reset() {
     setQuery("");
     setFamily("");
     setState("");
+    document.getElementById("element-search")?.focus();
   }
   function compare(number: number) {
     setFirst(number);
-    document
-      .getElementById("compare")
-      ?.scrollIntoView?.({ behavior: "smooth" });
+    document.getElementById("compare-material-a")?.focus();
   }
   return (
     <>
@@ -87,36 +88,55 @@ export default function App() {
             <label className="search-label">
               Search elements
               <input
+                id="element-search"
                 type="search"
                 placeholder="Name, symbol, or atomic number"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
             </label>
-            <label>
-              Family
-              <select
-                value={family}
-                onChange={(e) => setFamily(e.target.value)}
-              >
-                <option value="">All families</option>
-                {families.map((f) => (
-                  <option key={f}>{f}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Standard state
-              <select value={state} onChange={(e) => setState(e.target.value)}>
-                <option value="">All states</option>
-                {["Solid", "Liquid", "Gas"].map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
-            </label>
-            <button type="button" className="quiet" onClick={reset}>
-              Reset filters
+            <button
+              type="button"
+              className="quiet filter-toggle"
+              aria-label="Filters"
+              aria-expanded={showFilters}
+              aria-controls="filter-options"
+              onClick={() => setShowFilters((value) => !value)}
+            >
+              Filters
             </button>
+            <div
+              id="filter-options"
+              className={`filter-options${showFilters ? " expanded" : ""}`}
+            >
+              <label>
+                Family
+                <select
+                  value={family}
+                  onChange={(e) => setFamily(e.target.value)}
+                >
+                  <option value="">All families</option>
+                  {families.map((f) => (
+                    <option key={f}>{f}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Standard state
+                <select
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                >
+                  <option value="">All states</option>
+                  {["Solid", "Liquid", "Gas"].map((s) => (
+                    <option key={s}>{s}</option>
+                  ))}
+                </select>
+              </label>
+              <button type="button" className="quiet" onClick={reset}>
+                Reset filters
+              </button>
+            </div>
           </div>
           <div className="results-line">
             <p role="status">{visible.length} of 118 elements</p>
@@ -126,6 +146,7 @@ export default function App() {
             <div className="board panel">
               {visible.length ? (
                 <PeriodicTable
+                  compact={filtered}
                   records={visible}
                   selected={selected}
                   onSelect={setSelected}
@@ -148,9 +169,15 @@ export default function App() {
                 ))}
               </div>
               <p className="small muted table-caption">
-                18 groups · 7 periods. Lanthanides and actinides are displayed
-                below periods 6 and 7; detached columns are layout positions,
-                not assigned groups.
+                {filtered ? (
+                  "Filtered results. Select a card for its scientific period, group, and source record."
+                ) : (
+                  <>
+                    18 groups · 7 periods. Lanthanides and actinides are
+                    displayed below periods 6 and 7; detached columns are layout
+                    positions, not assigned groups.
+                  </>
+                )}
               </p>
             </div>
             <ElementDetail

@@ -33,9 +33,9 @@
 **Interfaces:** `ElementRecord`, `elements`, `filterElements(elements, query, family, state)`, `parseConditions(temperature, temperatureUnit, pressure, pressureUnit)`.
 
 - [x] Import the exact scaffold and run its three baseline tests.
-- [ ] Write and run failing tests for 118 identities, unique layout, scientific periods, aliases, prediction labels, filters, and unit validation.
-- [ ] Implement the typed, immutable dataset and pure filtering/conversion functions; run tests and type-check.
-- [ ] Record provenance and source limitations separately from the code license.
+- [x] Write and run failing tests for 118 identities, unique layout, scientific periods, aliases, prediction labels, filters, and unit validation.
+- [x] Implement the typed, immutable dataset and pure filtering/conversion functions; run tests and type-check.
+- [x] Record provenance and source limitations separately from the code license.
 
 ### Task 2: Accessible React explorer
 
@@ -43,16 +43,17 @@
 
 **Interfaces:** Consume Task 1's `ElementRecord` and filtering/conditions functions. Components receive records and selection callbacks; no runtime data fetch.
 
-- [ ] Write and run failing interaction tests for all 118 buttons, search/filter/reset, selection, keyboard selection, comparison choices, validation, and missing data.
-- [ ] Implement the responsive dark scientific dashboard, detail sources, selectable comparison, explicit coverage states, and native keyboard controls.
-- [ ] Run lint, type-check, unit and scaffold tests, and production build.
+- [x] Write and run failing interaction tests for all 118 buttons, search/filter/reset, selection, keyboard selection, comparison choices, validation, and missing data.
+- [x] Implement the responsive dark scientific dashboard, detail sources, selectable comparison, explicit coverage states, and native keyboard controls.
+- [x] Run lint, type-check, unit and scaffold tests, and production build.
 
 ### Task 3: Browser validation, PR, and authorized release
 
 **Files:** `tests/explorer.spec.ts`, `playwright.config.ts`, `.github/workflows/test.yml`, `README.md`, `docs/architecture.md`, `docs/sources-and-licenses.md`, `docs/release.md`.
 
-- [ ] Test built assets at desktop and mobile widths, API-unavailable operation, filters, details, comparison, keyboard navigation, console health, and axe accessibility.
-- [ ] Review the whole branch, fix significant findings, and rerun validation.
+- [x] Test built assets at desktop and mobile widths, API-unavailable operation, filters, details, comparison, keyboard navigation, console health, and axe accessibility.
+- [x] Review the whole branch, fix significant findings, and rerun validation.
 - [ ] Open the first PR; preserve reviewability and do not merge automatically.
-- [ ] Inspect existing Worker, DNS, and Access state; back up the exact prior Worker. Prepare bounded release configuration and rollback instructions.
+- [x] Inspect existing Worker, DNS, and Access state; back up the exact prior Worker. Prepare bounded release configuration and rollback instructions.
 - [ ] Use a preview before activating the approved Matter Atlas production/domain changes; verify public app and preserved APIs and private protections.
+
