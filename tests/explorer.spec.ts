@@ -1,0 +1,153 @@
+import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+
+test("a filtered result is visible beside the search controls before clicking", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("searchbox").fill("Og");
+  const result = page.getByRole("button", { name: /^118 / });
+  await expect(result).toHaveCount(1);
+  await expect(result).toBeInViewport();
+  await result.click();
+  await expect(
+    page.getByRole("heading", { name: "Oganesson", exact: true }),
+  ).toBeVisible();
+});
+
+test("bundled explorer works without APIs, supports keyboard, filters, and details", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  const blockedGatewayScripts: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() !== "error") return;
+    const text = message.text();
+    // The existing zone-wide Google Tag Gateway injects these two snippets.
+    // Cloudflare cannot exclude a hostname; retain the application's CSP blocks.
+    // Match exact known script hashes only. Every other console error still fails.
+    const knownGatewayBlock =
+      new URL(page.url()).hostname === "matter.goldshore.ai" &&
+      text.startsWith(
+        "Executing inline script violates the following Content Security Policy directive",
+      ) &&
+      [
+        "sha256-d9pJ8Gct7UHXekX6s5gMhUA9tSkd/vEyPfrwaRoCjzc=",
+        "sha256-bGSVHoMEJKsgXk/66rgtBJc6YaOnmGNN54yqJW2tBjA=",
+      ].some((hash) => text.includes(hash));
+    if (knownGatewayBlock) blockedGatewayScripts.push(text);
+    else errors.push(text);
+  });
+  await page.route("**/api/**", (route) => route.abort());
+  await page.goto("/");
+  await expect(page).toHaveTitle("Gold Shore Matter Atlas");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Matter");
+  await expect(page.getByRole("button", { name: /^\d+ / })).toHaveCount(118);
+  const he = page.getByRole("button", { name: /^2 / });
+  await he.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("button", { name: /^3 / })).toBeFocused();
+  await expect(
+    page.getByRole("heading", { name: "Lithium", exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press("Tab");
+  await expect(
+    page.getByRole("button", { name: "Compare Li as material A" }),
+  ).toBeFocused();
+  await page.getByRole("searchbox").fill("  aluminum  ");
+  await page.getByRole("button", { name: /^13 / }).click();
+  await expect(
+    page.getByLabel("Element details").getByRole("heading", { level: 2 }),
+  ).toHaveText(/Alumin/);
+  const filterToggle = page.getByRole("button", {
+    name: "Filters",
+    exact: true,
+  });
+  if (await filterToggle.isVisible()) await filterToggle.click();
+  await page
+    .getByRole("combobox", { name: "Family", exact: true })
+    .selectOption("Noble gas");
+  await expect(
+    page.getByText("No elements match these filters."),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Reset filters" }).click();
+  await page
+    .getByRole("combobox", { name: "Standard state", exact: true })
+    .selectOption("Liquid");
+  await expect(page.getByRole("button", { name: /^\d+ / })).toHaveCount(2);
+  await page.getByRole("button", { name: "Reset filters" }).click();
+  await page.getByRole("searchbox").fill("Og");
+  await page.getByRole("button", { name: /^118 / }).click();
+  await expect(
+    page.getByLabel("Element details").getByText("Expected to be a Gas"),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "View Oganesson on PubChem" }),
+  ).toHaveAttribute(
+    "href",
+    "https://pubchem.ncbi.nlm.nih.gov/element/Oganesson",
+  );
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  expect(errors).toEqual([]);
+  if (blockedGatewayScripts.length)
+    test.info().annotations.push({
+      type: "Known zone CSP blocks",
+      description: `${blockedGatewayScripts.length} Google Tag Gateway inline snippets blocked; see docs/release.md. No unexpected console errors.`,
+    });
+});
+
+test("comparison updates selections and validates condition inputs without inventing data", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Compare He as material A" }).click();
+  await expect(page.getByLabel("Material A")).toHaveValue("2");
+  await page.getByLabel("Material A").selectOption("79");
+  await page.getByLabel("Material B").selectOption("8");
+  const table = page.getByRole("table", { name: "Element comparison" });
+  await expect(table.getByRole("columnheader", { name: "Gold" })).toBeVisible();
+  await expect(
+    table.getByRole("columnheader", { name: "Oxygen" }),
+  ).toBeVisible();
+  await expect(table.getByText("Not loaded")).toHaveCount(6);
+  await page.getByLabel("Temperature unit").selectOption("C");
+  await page.getByLabel("Temperature", { exact: true }).fill("0");
+  await expect(page.getByText("273.15 K · 101325 Pa")).toBeVisible();
+  await page.getByLabel("Pressure unit").selectOption("bar");
+  await page.getByLabel("Pressure", { exact: true }).fill("1");
+  await expect(page.getByText("273.15 K · 100000 Pa")).toBeVisible();
+  await page.getByLabel("Temperature", { exact: true }).fill("-274");
+  await expect(page.getByRole("alert")).toBeVisible();
+  await expect(page.getByText("273.15 K · 100000 Pa")).toHaveCount(0);
+  await page.getByLabel("Temperature", { exact: true }).fill("0");
+  await page.getByLabel("Pressure", { exact: true }).fill("0");
+  await expect(page.getByRole("alert")).toBeVisible();
+});
+
+test("no serious accessibility findings or horizontal page overflow", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: /^\d+ / })).toHaveCount(118);
+  await page.getByText("Data coverage & source", { exact: true }).click();
+  const scan = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+    .analyze();
+  expect(
+    scan.violations.map((v) => ({
+      id: v.id,
+      impact: v.impact,
+      targets: v.nodes.map((n) => n.target),
+    })),
+  ).toEqual([]);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});
